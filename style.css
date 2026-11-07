@@ -1,0 +1,528 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at 20% 30%, #1a1a3a 0%, #05050f 80%);
+    height: 100vh;
+    overflow: hidden;
+    color: white;
+}
+
+/* ── Desktop ── */
+#desktop {
+    width: 100vw;
+    height: calc(100vh - 48px);
+    position: relative;
+    padding: 10px; /* Gives windows a bit of breathing room */
+}
+
+/* ── Windows ── */
+.window {
+    position: absolute;
+    top: 100px;
+    left: 100px;
+    width: 460px;
+    height: 320px;
+    min-width: 260px;
+    min-height: 180px;
+    background: rgba(15, 20, 35, 0.85);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(108, 99, 255, 0.3);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(108, 99, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: opacity 0.15s ease;
+}
+
+/* Maximized State */
+.window.maximized {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: calc(100vh - 48px) !important;
+    border-radius: 0;
+    border: none;
+}
+
+.window.maximized .resize-handle {
+    display: none;
+}
+
+/* Minimized State */
+.window.minimized {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.title-bar {
+    background: rgba(108, 99, 255, 0.15);
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: grab;
+    border-bottom: 1px solid rgba(108, 99, 255, 0.2);
+    flex-shrink: 0;
+}
+
+.title-bar:active { cursor: grabbing; }
+
+.title-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    color: #c7d2fe;
+    pointer-events: none;
+}
+
+/* ── Window Controls ── */
+.window-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.win-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.win-btn:hover { background: rgba(255, 255, 255, 0.1); color: white; }
+.close-btn:hover { background: #ff4757; color: white; }
+
+.window-content {
+    padding: 20px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #a0aec0;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+}
+
+.window-content.no-padding {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.window-content.no-padding iframe {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    border: 0;
+    display: block;
+    background: #030712;
+}
+
+/* ── Resize Handle ── */
+.resize-handle {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 18px;
+    height: 18px;
+    cursor: nwse-resize;
+    z-index: 10;
+}
+
+.resize-handle::after {
+    content: '';
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid rgba(108, 99, 255, 0.7);
+    border-bottom: 2px solid rgba(108, 99, 255, 0.7);
+    border-radius: 0 0 3px 0;
+    transition: border-color 0.2s;
+}
+
+.window:hover .resize-handle::after { border-color: rgba(199, 125, 255, 0.95); }
+
+/* ── Taskbar (Transparent Glass) ── */
+#taskbar {
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    height: 48px;
+    background: rgba(8, 11, 18, 0.4); /* More transparent */
+    backdrop-filter: blur(25px) saturate(150%);
+    -webkit-backdrop-filter: blur(25px) saturate(150%);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    z-index: 1000;
+}
+
+#start-btn {
+    background: rgba(108, 99, 255, 0.2);
+    border: 1px solid rgba(108, 99, 255, 0.4);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+#start-btn:hover {
+    background: rgba(108, 99, 255, 0.4);
+    box-shadow: 0 0 15px rgba(108, 99, 255, 0.4);
+}
+
+/* ── Taskbar Open Apps ── */
+#open-apps {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 20px;
+    flex: 1;
+    overflow-x: auto;
+}
+
+.taskbar-app {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: #cbd5e1;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.taskbar-app:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.taskbar-app.active {
+    background: rgba(108, 99, 255, 0.25);
+    border-color: rgba(108, 99, 255, 0.5);
+    color: white;
+    box-shadow: 0 0 10px rgba(108, 99, 255, 0.2);
+}
+
+.taskbar-app .icon { font-size: 1rem; }
+
+#clock {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    padding-left: 15px;
+}
+
+/* ── Start Menu ── */
+#start-menu {
+    position: fixed;
+    bottom: 60px;
+    left: 10px;
+    width: 280px;
+    background: rgba(15, 20, 35, 0.75);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(108, 99, 255, 0.2);
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 2000;
+    transform: translateY(10px);
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+#start-menu.active {
+    display: flex;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.start-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+}
+
+.start-header h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    color: #c7d2fe;
+}
+
+.start-header p { font-size: 0.7rem; color: #64748b; }
+
+.start-apps { display: flex; flex-direction: column; gap: 5px; }
+
+.app-btn {
+    background: transparent;
+    border: none;
+    color: #e2e8f0;
+    padding: 10px;
+    text-align: left;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.app-btn:hover { background: rgba(255, 255, 255, 0.1); }
+.app-btn .icon { font-size: 1.2rem; }
+
+/* ── Desktop Icons ── */
+.desktop-icon {
+    position: absolute;
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    user-select: none;
+    z-index: 5;
+}
+
+.desktop-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.desktop-icon:active {
+    transform: scale(0.95);
+    background: rgba(108, 99, 255, 0.2);
+}
+
+.desktop-icon .icon-img {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+}
+
+.desktop-icon .icon-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: white;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    word-wrap: break-word;
+    width: 100%;
+}
+
+/* ── Desktop Icons ── */
+.desktop-icon {
+    position: absolute;
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    user-select: none;
+    z-index: 5;
+}
+
+.desktop-icon:hover { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.05); }
+.desktop-icon.dragging { opacity: 0.5; }
+
+.desktop-icon .icon-img {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    pointer-events: none;
+}
+
+.desktop-icon .icon-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: white;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    word-wrap: break-word;
+    width: 100%;
+    outline: none;
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.desktop-icon .icon-text[contenteditable="true"] {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--accent-bright);
+    cursor: text;
+}
+
+/* ── Settings App UI ── */
+.settings-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 30%;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding-right: 10px;
+}
+.settings-tab {
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+.settings-tab:hover, .settings-tab.active {
+    background: rgba(108, 99, 255, 0.2);
+    color: white;
+}
+.settings-content { padding-left: 15px; width: 70%; color: #94a3b8; font-size: 0.85rem; }
+.settings-content h2 { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: white; margin-bottom: 15px; }
+.settings-row { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 10px; }
+
+/* ── Pin Button in Start Menu ── */
+.pin-btn {
+    background: transparent; border: none; color: #64748b; font-size: 1.1rem; cursor: pointer;
+    padding: 0 5px; transition: color 0.2s; margin-left: auto;
+}
+.pin-btn:hover { color: #c77dff; }
+
+#start-btn {
+    font-size: 1.5rem; /* Makes the ℘ symbol bigger */
+    padding: 2px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Phonk Player ── */
+.phonk-container {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; background: radial-gradient(circle at center, rgba(199, 125, 255, 0.1) 0%, rgba(15, 20, 35, 0.8) 100%);
+    padding: 20px; text-align: center;
+}
+.phonk-disc {
+    width: 120px; height: 120px; border-radius: 50%;
+    background: repeating-radial-gradient(#111 0%, #111 5%, #222 5%, #222 10%);
+    border: 4px solid rgba(199, 125, 255, 0.5);
+    box-shadow: 0 0 30px rgba(199, 125, 255, 0.3);
+    margin-bottom: 20px; display: flex; align-items: center; justify-content: center;
+    position: relative; transition: transform 0.2s;
+}
+.phonk-disc.playing { animation: spin 3s linear infinite; box-shadow: 0 0 50px rgba(199, 125, 255, 0.8), inset 0 0 20px rgba(0, 0, 0, 0.8); }
+.phonk-disc::after { content: ''; width: 30px; height: 30px; border-radius: 50%; background: #c77dff; box-shadow: 0 0 15px #c77dff; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+.phonk-title { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: #fff; margin-bottom: 5px; text-shadow: 0 0 10px rgba(199, 125, 255, 0.5); }
+.phonk-sub { font-family: 'Inter', sans-serif; font-size: 0.8rem; color: #94a3b8; margin-bottom: 20px; }
+.phonk-controls { display: flex; gap: 15px; align-items: center; }
+.phonk-btn {
+    background: rgba(108, 99, 255, 0.1); border: 1px solid rgba(199, 125, 255, 0.3);
+    color: #c77dff; width: 45px; height: 45px; border-radius: 50%;
+    font-size: 1.2rem; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.phonk-btn:hover { background: rgba(199, 125, 255, 0.3); color: white; box-shadow: 0 0 15px rgba(199, 125, 255, 0.5); }
+.phonk-btn.play-btn { width: 60px; height: 60px; font-size: 1.5rem; background: rgba(199, 125, 255, 0.2); }
+.phonk-pulser {
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 5px;
+    background: #c77dff; box-shadow: 0 0 20px #c77dff; opacity: 0;
+}
+.phonk-disc.playing ~ .phonk-pulser { animation: pulse-bass 0.5s ease-in-out infinite alternate; opacity: 1; }
+@keyframes pulse-bass { from { height: 5px; opacity: 0.5; } to { height: 15px; opacity: 1; } }
+
+/* ── Phonk Playlist UI ── */
+#phonk-playlist-ui::-webkit-scrollbar { width: 4px; }
+#phonk-playlist-ui::-webkit-scrollbar-thumb { background: rgba(199, 125, 255, 0.5); border-radius: 4px; }
+
+.phonk-track-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 5px;
+    border: 1px solid transparent;
+}
+
+.phonk-track-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.phonk-track-item.active {
+    background: rgba(199, 125, 255, 0.15);
+    border-color: rgba(199, 125, 255, 0.4);
+    box-shadow: 0 0 10px rgba(199, 125, 255, 0.2);
+}
+
+.phonk-track-num {
+    font-family: 'Orbitron', sans-serif;
+    color: #64748b;
+    font-size: 0.8rem;
+    width: 20px;
+}
+
+.phonk-track-item.active .phonk-track-num {
+    color: #c77dff;
+}
+
+.phonk-track-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.phonk-track-name {
+    color: #e2e8f0;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.phonk-track-artist {
+    color: #64748b;
+    font-size: 0.7rem;
+}
+
+.phonk-track-item.active .phonk-track-name {
+    color: #c77dff;
+    text-shadow: 0 0 8px rgba(199, 125, 255, 0.5);
+}

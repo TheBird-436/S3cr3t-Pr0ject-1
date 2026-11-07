@@ -1,0 +1,51 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiumis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="desktop"></div>
+
+    <div id="start-menu">
+        <div class="start-header">
+            <h3>Phiumis OS</h3>
+            <p>By Ailphium</p>
+        </div>
+        <div class="start-apps">
+            <div style="display: flex; align-items: center; width: 100%;">
+              
+                          <!-- Add this inside <div class="start-apps"> -->
+            <div style="display: flex; align-items: center; width: 100%;">
+                <button class="app-btn" onclick="openApp('phonk')" style="flex: 1;">
+                    <span class="icon">🎧</span> Phonk Player
+                </button>
+                <button class="pin-btn" onclick="pinToDesktop('phonk', '🎧', 'Phonk Player')" title="Pin to Desktop">🖥️</button>
+            </div>
+              
+                <button class="app-btn" onclick="openApp('spacefarer')" style="flex: 1;">
+                    <span class="icon">🪐</span> Spacefarer
+                </button>
+                <button class="pin-btn" onclick="pinToDesktop('spacefarer', '🪐', 'Spacefarer')" title="Pin to Desktop">🖥️</button>
+            </div>
+            <div style="display: flex; align-items: center; width: 100%;">
+                <button class="app-btn" onclick="openApp('settings')" style="flex: 1;">
+                    <span class="icon">⚙️</span> Settings
+                </button>
+                <button class="pin-btn" onclick="pinToDesktop('settings', '⚙️', 'Settings')" title="Pin to Desktop">🖥️</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="taskbar">
+        <button id="start-btn">℘</button>
+        <div id="open-apps"></div>
+        <div id="clock">00:00 PM</div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
