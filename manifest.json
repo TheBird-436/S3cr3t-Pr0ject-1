@@ -1,0 +1,15 @@
+{
+  "name": "S3cr3t Pr0ject 1",
+  "short_name": "SP1",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#05050f",
+  "theme_color": "#05050f",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3233/3233089.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
