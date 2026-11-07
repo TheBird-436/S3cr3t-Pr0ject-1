@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -5,6 +6,7 @@
     <title>Phiumis</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
@@ -16,27 +18,31 @@
             <p>By Ailphium</p>
         </div>
         <div class="start-apps">
+            
+            <!-- Spacefarer -->
             <div style="display: flex; align-items: center; width: 100%;">
-              
-                          <!-- Add this inside <div class="start-apps"> -->
+                <button class="app-btn" onclick="openApp('spacefarer')" style="flex: 1;">
+                    <span class="icon">🪐</span> Spacefarer
+                </button>
+                <button class="pin-btn" onclick="pinToDesktop('spacefarer', '🪐', 'Spacefarer')" title="Pin to Desktop">🖥️</button>
+            </div>
+
+            <!-- Phonk Player -->
             <div style="display: flex; align-items: center; width: 100%;">
                 <button class="app-btn" onclick="openApp('phonk')" style="flex: 1;">
                     <span class="icon">🎧</span> Phonk Player
                 </button>
                 <button class="pin-btn" onclick="pinToDesktop('phonk', '🎧', 'Phonk Player')" title="Pin to Desktop">🖥️</button>
             </div>
-              
-                <button class="app-btn" onclick="openApp('spacefarer')" style="flex: 1;">
-                    <span class="icon">🪐</span> Spacefarer
-                </button>
-                <button class="pin-btn" onclick="pinToDesktop('spacefarer', '🪐', 'Spacefarer')" title="Pin to Desktop">🖥️</button>
-            </div>
+
+            <!-- Settings -->
             <div style="display: flex; align-items: center; width: 100%;">
                 <button class="app-btn" onclick="openApp('settings')" style="flex: 1;">
                     <span class="icon">⚙️</span> Settings
                 </button>
                 <button class="pin-btn" onclick="pinToDesktop('settings', '⚙️', 'Settings')" title="Pin to Desktop">🖥️</button>
             </div>
+
         </div>
     </div>
 
@@ -46,6 +52,17 @@
         <div id="clock">00:00 PM</div>
     </div>
 
+    <!-- Only ONE script tag for app.js -->
     <script src="app.js"></script>
+    
+    <!-- Service Worker for Offline Mode -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js');
+        });
+      }
+    </script>
+    
 </body>
 </html>
